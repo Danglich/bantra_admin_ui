@@ -1,0 +1,51 @@
+.container {
+    height: calc(100vh - 60px);
+    background-color: rgb(251, 251, 255);
+    position: sticky;
+    top: 60px;
+    padding: 20px;
+    flex: 0.9;
+
+    .sidebar-menu {
+        padding-bottom: 12px;
+
+        .menu-title {
+            font-size: 1.4rem;
+            color: rgb(187, 186, 186);
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            
+        }
+
+        .list {
+            margin-left: 5px;
+            .item {
+                display: flex;
+                align-items: center;
+                padding: 5px;
+                border-radius: 8px;
+                cursor: pointer;
+                color: #555;
+
+                &:hover {
+                    background-color: rgb(240, 240, 255);
+                }
+
+                &.active {
+                    background-color: rgb(240, 240, 255);
+
+                }
+                
+                .icon {
+                    font-size: 2rem;
+                    margin-right: 6px;
+                }
+
+                .title {
+                    font-size: 1.6rem;
+                }
+            }
+        }
+    }
+}

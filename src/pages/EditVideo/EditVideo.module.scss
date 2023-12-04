@@ -1,0 +1,191 @@
+.container {
+    padding: 20px;
+
+    .topbar {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .title {
+            font-size: 3.2rem;
+            font-weight: bold;
+            display: block;
+            flex: 1;
+        }
+
+        .delete-btn {
+            padding: 5px 16px;
+            background-color: rgb(43, 32, 240);
+            color: white;
+            border-radius: 8px;
+            margin-right: 16px;
+        }
+
+        .create-btn {
+            padding: 5px 16px;
+            background-color: teal;
+            color: white;
+            border-radius: 8px;
+        }
+    }
+}
+
+.body {
+    display: flex;
+
+    .body-left {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+        box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+        margin-right: 10px;
+        padding: 20px;
+
+        .user {
+            display: flex;
+            margin-bottom: 20px;
+
+            img {
+                height: 40px;
+                width: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 12px;
+            }
+
+            .user-info {
+                display: flex;
+                flex-direction: column;
+
+                .nickname {
+                    font-weight: 600;
+                }
+
+                .fullname {
+                    font-weight: 300;
+                }
+            }
+        }
+
+        .body-container {
+            display: flex;
+            flex-wrap: wrap;
+
+            video {
+                width: 270px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+
+            .info-container {
+                margin-top: -20px;
+                margin-left: 24px;
+
+                .video-info {
+                    margin: 20px 0;
+
+                    .title {
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        color: rgb(175, 170, 170);
+                        margin-bottom: 8px;
+                        display: block;
+                    }
+
+                    .detail-list {
+                        color: #444;
+
+                        .detail-item {
+                            display: flex;
+                            align-items: center;
+                            padding: 6px 2px;
+
+                            .detail-icon {
+                                font-size: 1.8rem;
+                                margin-right: 8px;
+                            }
+
+                            .disable {
+                                color: red;
+                            }
+                        }
+                    }
+                }
+
+                .video-title-container {
+                    margin-bottom: 8px;
+                    .title {
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        color: rgb(175, 170, 170);
+                        margin-bottom: 8px;
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    .body-right {
+        flex: 1;
+        padding: 20px;
+        -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+        box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+
+        .title {
+            font-size: 2.4rem;
+            font-weight: 600;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 16px;
+
+                label {
+                    margin-bottom: 12px;
+                }
+
+                select {
+                    height: 32px;
+                }
+            }
+
+            .upload-btn {
+                width: 200px;
+                background-color: darkblue;
+                border-radius: 5px;
+                color: white;
+                padding: 10px 0;
+                margin-top: 30px;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+
+            .cancel-btn {
+                cursor: pointer;
+                width: 200px;
+                background-color: rgb(198, 197, 197);
+                border-radius: 5px;
+                color: black;
+                padding: 10px 0;
+                margin-top: 30px;
+                text-align: center;
+                margin-right: 24px;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+}

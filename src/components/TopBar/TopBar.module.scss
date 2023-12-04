@@ -1,0 +1,88 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    z-index: 999;
+    background-color: #fff;
+
+    .logo {
+        color: darkblue;
+        font-size: 3rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+        .icon {
+            font-size: 30px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .link-to-web,
+        .create-btn {
+            min-width: 72px;
+            color: #f0ecec;
+            background-color: #19a0d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 6px;
+            border-radius: 4px;
+            margin-right: 12px;
+
+            &:hover {
+                opacity: 0.8;
+                cursor: pointer;
+            }
+        }
+
+        .user {
+            position: relative;
+            .avatar {
+                height: 40px;
+                width: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                cursor: pointer;
+            }
+
+            &:hover .option {
+                display: block;
+            }
+
+            .option {
+                -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+                box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+                min-width: 140px;
+                position: absolute;
+                background-color: white;
+                right: -5px;
+                padding: 8px 0;
+                display: none;
+
+                .item {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px 10px;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: rgb(250, 248, 248);
+                    }
+
+                    .icon {
+                        margin-right: 8px;
+                        font-size: 1.8rem;
+                    }
+                }
+            }
+        }
+    }
+}

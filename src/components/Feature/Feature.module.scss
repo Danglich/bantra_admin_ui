@@ -1,0 +1,64 @@
+.container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+
+    .feature-item {
+        flex: 1;
+        margin: 0px 20px;
+        padding: 30px;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0px 0px 15px -10px rgb(0 0 0 / 75%);
+
+        .title {
+            font-size: 2rem;
+        }
+
+        .money-container {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+
+            .money {
+                font-size: 3rem;
+                font-weight: 600;
+
+            }
+
+            .rate {
+                display: flex;
+                align-items: center;
+                font-size: 1.7rem;
+                margin-left: 20px;
+
+                &.increase {
+                    .icon--down {
+                        display: none;
+                    }
+                    .icon--up {
+                        color: green;
+                        font-size: 2.2rem;
+                        margin-left: 4px;
+                    }
+                }
+
+                &.reduce {
+                    .icon--up {
+                        display: none;
+                    }
+                    .icon--down {
+                        font-size: 2.2rem;
+                        color: red;
+                        margin-left: 4px;
+                    }
+                }
+            }
+        }
+        .subtitle {
+            color: gray;
+            font-weight: 300;
+        }
+    }
+}
