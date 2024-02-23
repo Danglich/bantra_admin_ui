@@ -7,6 +7,7 @@ import WidgetLg from '../../components/WidgetLg';
 import { useEffect, useMemo } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
+import { apiUrl } from '../../constants';
 
 const cx = classNames.bind(styles);
 
@@ -19,9 +20,7 @@ export default function Home() {
         let didCacel = false;
         const fetchData = async () => {
             try {
-                const resOrder = await axios.get(
-                    `http://localhost:8080/api/orders/stats`,
-                );
+                const resOrder = await axios.get(`${apiUrl}/api/orders/stats`);
                 //const resVideo = await axios.get(`${apiUrl}/videos/stats`);
                 if (!didCacel) {
                     setOrderStats(resOrder.data);
@@ -39,7 +38,7 @@ export default function Home() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/orders/top')
+            .get(`${apiUrl}/api/orders/top`)
             .then((response) => {
                 setNewOrders(response.data);
             })
@@ -50,7 +49,7 @@ export default function Home() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/reviews/top')
+            .get(`${apiUrl}/api/reviews/top`)
             .then((response) => {
                 setNewReviews(response.data);
             })

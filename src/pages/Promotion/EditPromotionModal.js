@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { apiUrl } from '../../constants';
 
 function EditPromotionModal({ closeModal, data }) {
     const [promotionData, setPromotionData] = useState({});
@@ -35,7 +36,7 @@ function EditPromotionModal({ closeModal, data }) {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/product_categories')
+            .get(`${apiUrl}/api/product_categories`)
             .then((response) => {
                 const data = response.data;
                 setProductCategory(data);
@@ -87,11 +88,11 @@ function EditPromotionModal({ closeModal, data }) {
                 formData.append('image', image);
 
                 const responseUploadImage = await axios.post(
-                    'http://localhost:8080/api/files/upload',
+                    `${apiUrl}/api/admin/files/upload`,
                     formData,
                 );
 
-                await axios.post(`http://localhost:8080/api/promotions`, {
+                await axios.post(`${apiUrl}/api/admin/promotions`, {
                     ...promotionData,
                     thumbnail: responseUploadImage.data,
                 });
@@ -102,7 +103,7 @@ function EditPromotionModal({ closeModal, data }) {
         } else {
             try {
                 await axios.put(
-                    `http://localhost:8080/api/promotions`,
+                    `${apiUrl}/api/admin/promotions`,
                     promotionData,
                 );
             } catch (error) {

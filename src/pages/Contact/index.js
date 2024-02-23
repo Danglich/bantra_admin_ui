@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 const ContactList = () => {
     const [filter, setFilter] = useState({
@@ -13,23 +15,23 @@ const ContactList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [contacts, setContacts] = useState([]);
     const [params, setParams] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         axios
-            .get(
-                `http://localhost:8080/api/contacts${`?page=${
-                    currentPage - 1
-                }`}${params}`,
-            )
+            .get(`${apiUrl}/api/contacts${`?page=${currentPage - 1}`}${params}`)
             .then((response) => {
                 const data = response.data;
 
                 setTotalPages(data.totalPages);
                 setCurrentPage(data.currentPage + 1);
                 setContacts(data.data);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
 
@@ -69,6 +71,8 @@ const ContactList = () => {
             <h1 className="text-[32px] mb-[24px]">
                 Danh sách đánh giá sản phẩm
             </h1>
+
+            {/* Bộ lọc */}
             <div className="flex mb-[24px]">
                 <div className="mr-4">
                     <label className="mr-2">Ngày bắt đầu:</label>
@@ -108,53 +112,62 @@ const ContactList = () => {
                     </button>
                 </div>
             </div>
-            {/* Phần nội dung */}
-            <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className="text-left py-3 px-4 border-b">
-                            Nội dung
-                        </th>
-                        <th className="text-left py-3 px-4 border-b">Email</th>
-                        <th className="text-left py-3 px-4 border-b">
-                            Tên người dùng
-                        </th>
-                        <th className="text-left py-3 px-4 border-b">
-                            Số điện thoạii
-                        </th>
-                        <th className="text-left py-3 px-4 border-b">
-                            Thời gian
-                        </th>
-                        {/* Thêm cột Xóa */}
-                    </tr>
-                </thead>
-                <tbody>
-                    {contacts.map((contact) => (
-                        <tr key={contact.id}>
-                            <td className="py-4 px-4 border-b">
-                                {contact.content}
-                            </td>
-                            <td className="py-4 px-4 border-b">
-                                {contact.email}
-                            </td>
-                            <td className="py-4 px-4 border-b">
-                                {contact?.fullName}
-                            </td>
-                            <td className="py-4 px-4 border-b">
-                                {contact?.phoneNumber}
-                            </td>
-                            <td className="py-4 px-4 border-b">
-                                {contact?.createdAt.slice(0, 10)}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
 
-            {contacts.length === 0 && (
-                <h1 className="text-[red] text-[32px] mt-[24px]">
-                    Không tìm thấy liên hệ nào
-                </h1>
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    {/* Phần nội dung */}
+                    <table className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className="text-left py-3 px-4 border-b">
+                                    Nội dung
+                                </th>
+                                <th className="text-left py-3 px-4 border-b">
+                                    Email
+                                </th>
+                                <th className="text-left py-3 px-4 border-b">
+                                    Tên người dùng
+                                </th>
+                                <th className="text-left py-3 px-4 border-b">
+                                    Số điện thoạii
+                                </th>
+                                <th className="text-left py-3 px-4 border-b">
+                                    Thời gian
+                                </th>
+                                {/* Thêm cột Xóa */}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {contacts.map((contact) => (
+                                <tr key={contact.id}>
+                                    <td className="py-4 px-4 border-b">
+                                        {contact.content}
+                                    </td>
+                                    <td className="py-4 px-4 border-b">
+                                        {contact.email}
+                                    </td>
+                                    <td className="py-4 px-4 border-b">
+                                        {contact?.fullName}
+                                    </td>
+                                    <td className="py-4 px-4 border-b">
+                                        {contact?.phoneNumber}
+                                    </td>
+                                    <td className="py-4 px-4 border-b">
+                                        {contact?.createdAt.slice(0, 10)}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    {contacts.length === 0 && (
+                        <h1 className="text-[red] text-[32px] mt-[24px]">
+                            Không tìm thấy liên hệ nào
+                        </h1>
+                    )}
+                </>
             )}
 
             {/* Phần phân trang */}

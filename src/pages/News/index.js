@@ -3,6 +3,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 const NewsPage = () => {
     const [filter, setFilter] = useState({
@@ -18,11 +20,13 @@ const NewsPage = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [newsList, setNewsList] = useState([]);
     const [params, setParams] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get(
-                `http://localhost:8080/api/admin/news${`?page=${
+                `${apiUrl}/api/admin/news${`?page=${
                     currentPage - 1
                 }`}${params}`,
             )
@@ -32,9 +36,11 @@ const NewsPage = () => {
                 setTotalPages(data.totalPages);
                 setCurrentPage(data.currentPage + 1);
                 setNewsList(data.data);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
 
@@ -162,95 +168,103 @@ const NewsPage = () => {
                 </div>
             </div>
 
-            {/* Bảng dữ liệu */}
-            <table className="mt-[32px] min-w-full bg-white border border-gray-200">
-                <thead>
-                    <tr>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            ID
-                        </th>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            Tiêu đề
-                        </th>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            Ngày tạo
-                        </th>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            Tác giả
-                        </th>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            Trạng thái
-                        </th>
-                        <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
-                            Lượt xem
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {newsList.map((news) => (
-                        <tr key={news.id}>
-                            <td className="  border-b-[1px] px-4 py-3">
-                                {news.id}
-                            </td>
-                            <td className="  border-b-[1px] px-4 py-3">
-                                <Link to={`/news/${news.id}`}>
-                                    {news.title}
-                                </Link>
-                            </td>
-                            <td className="  border-b-[1px] px-4 py-3">
-                                {news.createdAt}
-                            </td>
-                            <td className="  border-b-[1px] px-4 py-3">
-                                {news.author}
-                            </td>
-                            <td className={`px-4 py-2 border-b-[1px]`}>
-                                <span
-                                    className={`px-[4px] rounded-[4px] ${getStatusColor(
-                                        news.published,
-                                    )}`}
-                                >
-                                    {news.published ? 'Đã đăng' : 'Đang chờ'}
-                                </span>
-                            </td>
-                            <td className="  border-b-[1px] px-4 py-3">
-                                {news.views}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    {/* Bảng dữ liệu */}
+                    <table className="mt-[32px] min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    ID
+                                </th>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    Tiêu đề
+                                </th>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    Ngày tạo
+                                </th>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    Tác giả
+                                </th>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    Trạng thái
+                                </th>
+                                <th className="px-4 font-bold py-2 text-left border-b-[1px] text-gray-800">
+                                    Lượt xem
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {newsList.map((news) => (
+                                <tr key={news.id}>
+                                    <td className="  border-b-[1px] px-4 py-3">
+                                        {news.id}
+                                    </td>
+                                    <td className="  border-b-[1px] px-4 py-3">
+                                        <Link to={`/news/${news.id}`}>
+                                            {news.title}
+                                        </Link>
+                                    </td>
+                                    <td className="  border-b-[1px] px-4 py-3">
+                                        {news.createdAt}
+                                    </td>
+                                    <td className="  border-b-[1px] px-4 py-3">
+                                        {news.author}
+                                    </td>
+                                    <td className={`px-4 py-2 border-b-[1px]`}>
+                                        <span
+                                            className={`px-[4px] rounded-[4px] ${getStatusColor(
+                                                news.published,
+                                            )}`}
+                                        >
+                                            {news.published
+                                                ? 'Đã đăng'
+                                                : 'Đang chờ'}
+                                        </span>
+                                    </td>
+                                    <td className="  border-b-[1px] px-4 py-3">
+                                        {news.views}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
 
-            {/* Phân trang */}
-            <div className="mt-[20px]">
-                <button
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className="bg-[#ccc] "
-                >
-                    <ArrowBackIosIcon />
-                </button>
+                    {/* Phân trang */}
+                    <div className="mt-[20px]">
+                        <button
+                            onClick={prevPage}
+                            disabled={currentPage === 1}
+                            className="bg-[#ccc]"
+                        >
+                            <ArrowBackIosIcon />
+                        </button>
 
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index + 1}
-                        onClick={() => goToPage(index + 1)}
-                        className={
-                            currentPage === index + 1
-                                ? 'bg-[#6767f3] mx-[4px] text-white px-[5px]'
-                                : 'bg-[#ccc] mx-[4px] px-[5px]'
-                        }
-                    >
-                        {index + 1}
-                    </button>
-                ))}
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => goToPage(index + 1)}
+                                className={
+                                    currentPage === index + 1
+                                        ? 'bg-[#6767f3] mx-[4px] text-white px-[5px]'
+                                        : 'bg-[#ccc] mx-[4px] px-[5px]'
+                                }
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
 
-                <button
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                >
-                    <ArrowForwardIosIcon />
-                </button>
-            </div>
+                        <button
+                            onClick={nextPage}
+                            disabled={currentPage === totalPages}
+                        >
+                            <ArrowForwardIosIcon />
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

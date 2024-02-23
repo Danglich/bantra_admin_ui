@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { createContext, useState } from 'react';
 import { useEffect } from 'react';
+import { apiUrl } from '../constants';
 
 const AuthContext = createContext();
 
@@ -20,7 +21,7 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/api/auth?token=${token}`)
+            .get(`${apiUrl}/api/auth?token=${token}`)
             .then((response) => {
                 setUser(response.data);
                 setAuthToken(token);

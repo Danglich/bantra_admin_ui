@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { message } from 'antd';
+import { apiUrl } from '../../constants';
 
 const cx = classNames.bind(styles);
 
@@ -26,7 +27,7 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post(
-                'http://localhost:8080/api/auth/admin/login',
+                `${apiUrl}/api/auth/admin/login`,
                 { email: formState?.email, password: formState?.password },
             );
             const token = response.data.token;

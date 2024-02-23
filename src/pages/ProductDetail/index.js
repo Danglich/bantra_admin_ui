@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import ProductEditModal from './ProductEditModal';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { apiUrl } from '../../constants';
 
 const ProductDetail = () => {
     const [product, setProduct] = useState({
@@ -19,7 +20,7 @@ const ProductDetail = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/api/products/${id}`)
+            .get(`${apiUrl}/api/products/${id}`)
             .then((response) => {
                 // Lưu danh sách loại sản phẩm vào state
                 setProduct(response.data);

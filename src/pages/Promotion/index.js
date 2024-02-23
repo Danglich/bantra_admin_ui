@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import NewPromotionModal from './NewPromotionModal';
 import axios from 'axios';
 import EditPromotionModal from './EditPromotionModal';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 const PromotionList = () => {
     const [filter, setFilter] = useState({
@@ -17,11 +19,13 @@ const PromotionList = () => {
     const [params, setParams] = useState('');
     const [productCategory, setProductCategory] = useState([]);
     const [editPromotion, setEditPromotion] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get(
-                `http://localhost:8080/api/promotions${`?page=${
+                `${apiUrl}/api/promotions${`?page=${
                     currentPage - 1
                 }`}${params}`,
             )
@@ -31,15 +35,21 @@ const PromotionList = () => {
                 setTotalPages(data.totalPages);
                 setCurrentPage(data.currentPage + 1);
                 setPromotions(data.data);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
 
+    const addPromotion = useCallback((promotion) => {
+        setPromotions((prev) => [...prev, promotion]);
+    }, []);
+
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/product_categories')
+            .get(`${apiUrl}/api/product_categories`)
             .then((response) => {
                 const data = response.data;
                 setProductCategory(data);
@@ -114,9 +124,7 @@ const PromotionList = () => {
     const handleDeletePromotion = (promotionId) => {
         if (window.confirm('Bạn có muốn tiếp tục xóa khuyến mãi không?')) {
             try {
-                axios.delete(
-                    `http://localhost:8080/api/promotions/${promotionId}`,
-                );
+                axios.delete(`${apiUrl}/api/promotions/${promotionId}`);
             } catch (error) {
                 console.log(error);
             }
@@ -181,118 +189,141 @@ const PromotionList = () => {
                 </button>
             </div>
 
-            {/* Phần danh sách */}
-            <table className="w-full bg-white border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className=" text-left py-2 px-4 border-b">Mô tả</th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Ngày bắt đầu
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Ngày kết thúc
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Trạng thái
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Sản phẩm áp dụng
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Chỉnh sửa
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">Xóa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {promotions.map((promotion) => (
-                        <tr key={promotion.id}>
-                            <td className="py-2 px-4 border-b">
-                                {promotion.description}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {formatDate(promotion.startDate)}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {formatDate(promotion.endDate)}
-                            </td>
-                            <td className={`py-2 px-4 border-b `}>
-                                <span
-                                    className={`text-white px-[12px] py-[4px] rounded-[6px] ${getStatusColor(
-                                        checkExpired(promotion),
-                                    )}`}
-                                >
-                                    {checkExpired(promotion)
-                                        ? 'Hết hạn'
-                                        : 'Chưa hết hạn'}
-                                </span>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                <ul>
-                                    {promotion?.productCategories.map(
-                                        (product, index) => (
-                                            <li key={index}>{product.name}</li>
-                                        ),
-                                    )}
-                                </ul>
-                            </td>
-
-                            <td className="py-2 px-4 border-b">
-                                <button
-                                    onClick={() => openEditModal(promotion)}
-                                    className="px-[8px] py-[4px] rounded-md bg-[blue] text-white"
-                                >
-                                    Edit
-                                </button>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                <button
-                                    onClick={() =>
-                                        handleDeletePromotion(promotion.id)
-                                    }
-                                    className="px-[8px] py-[4px] rounded-md bg-[red] text-white"
-                                >
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    {/* Phần danh sách */}
+                    <table className="w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Mô tả
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Ngày bắt đầu
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Ngày kết thúc
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Trạng thái
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Sản phẩm áp dụng
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Chỉnh sửa
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
                                     Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {promotions.map((promotion) => (
+                                <tr key={promotion.id}>
+                                    <td className="py-2 px-4 border-b">
+                                        {promotion.description}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {formatDate(promotion.startDate)}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {formatDate(promotion.endDate)}
+                                    </td>
+                                    <td className={`py-2 px-4 border-b `}>
+                                        <span
+                                            className={`text-white px-[12px] py-[4px] rounded-[6px] ${getStatusColor(
+                                                checkExpired(promotion),
+                                            )}`}
+                                        >
+                                            {checkExpired(promotion)
+                                                ? 'Hết hạn'
+                                                : 'Chưa hết hạn'}
+                                        </span>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <ul>
+                                            {promotion?.productCategories.map(
+                                                (product, index) => (
+                                                    <li key={index}>
+                                                        {product.name}
+                                                    </li>
+                                                ),
+                                            )}
+                                        </ul>
+                                    </td>
 
-            {/* Phần phân trang */}
-            <div className="flex justify-center mt-[20px]">
-                <nav>
-                    <ul className="flex items-center">
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <li
-                                key={index}
-                                className={`mr-1 ${
-                                    currentPage === index + 1
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200'
-                                }`}
-                            >
-                                <button
-                                    className="py-2 px-4 rounded"
-                                    onClick={() => paginate(index + 1)}
-                                >
-                                    {index + 1}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-            </div>
+                                    <td className="py-2 px-4 border-b">
+                                        <button
+                                            onClick={() =>
+                                                openEditModal(promotion)
+                                            }
+                                            className="px-[8px] py-[4px] rounded-md bg-[blue] text-white"
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <button
+                                            onClick={() =>
+                                                handleDeletePromotion(
+                                                    promotion.id,
+                                                )
+                                            }
+                                            className="px-[8px] py-[4px] rounded-md bg-[red] text-white"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {/* Phần phân trang */}
+                    <div className="flex justify-center mt-[20px]">
+                        <nav>
+                            <ul className="flex items-center">
+                                {Array.from(
+                                    { length: totalPages },
+                                    (_, index) => (
+                                        <li
+                                            key={index}
+                                            className={`mr-1 ${
+                                                currentPage === index + 1
+                                                    ? 'bg-blue-500 text-white'
+                                                    : 'bg-gray-200'
+                                            }`}
+                                        >
+                                            <button
+                                                className="py-2 px-4 rounded"
+                                                onClick={() =>
+                                                    paginate(index + 1)
+                                                }
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    ),
+                                )}
+                            </ul>
+                        </nav>
+                    </div>
 
-            {promotions.length === 0 && (
-                <h1 className="text-[32px] text-[red] mt-[16px]">
-                    Không tìm thấy khuyến mãi nào
-                </h1>
+                    {promotions.length === 0 && (
+                        <h1 className="text-[32px] text-[red] mt-[16px]">
+                            Không tìm thấy khuyến mãi nào
+                        </h1>
+                    )}
+                </>
             )}
 
             {showCreateModal && (
-                <NewPromotionModal closeModal={closeCreateModal} />
+                <NewPromotionModal
+                    onAdd={addPromotion}
+                    closeModal={closeCreateModal}
+                />
             )}
 
             {showEditModal && (

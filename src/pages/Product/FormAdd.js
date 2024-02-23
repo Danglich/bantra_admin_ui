@@ -1,15 +1,14 @@
 import { message } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { apiUrl } from '../../constants';
 
 function AddForm({ isShow, closeModal, product }) {
     const [variations, setVariations] = useState([]);
 
     useEffect(() => {
         axios
-            .get(
-                `http://localhost:8080/api/products/${product?.id}/product_variations`,
-            )
+            .get(`${apiUrl}/api/products/${product?.id}/product_variations`)
             .then((response) => {
                 setVariations(response.data);
             })
@@ -32,7 +31,7 @@ function AddForm({ isShow, closeModal, product }) {
         const variation = variations.find((v) => v.id == formData.variation);
 
         try {
-            await axios.put('http://localhost:8080/api/product_variations', {
+            await axios.put(`${apiUrl}/api/admin/product_variations`, {
                 ...variation,
                 quantity: variation.quantity + formData.quantity,
             });

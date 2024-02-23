@@ -36,14 +36,14 @@ function SideBar() {
                         <MicrowaveIcon className={cx('icon')} />
                         <span className={cx('title')}>Home</span>
                     </Link>
-                    <li className={cx('item')}>
+                    {/* <li className={cx('item')}>
                         <TimelineIcon className={cx('icon')} />
                         <span className={cx('title')}>Analytics</span>
                     </li>
                     <li className={cx('item')}>
                         <TrendingUpIcon className={cx('icon')} />
                         <span className={cx('title')}>Sales</span>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
             <div className={cx('sidebar-menu')}>
@@ -119,14 +119,14 @@ function SideBar() {
                         <PermIdentityIcon className={cx('icon')} />
                         <span className={cx('title')}>Liên hệ</span>
                     </Link>
-                    <li className={cx('item')}>
+                    {/* <li className={cx('item')}>
                         <LocalAtmIcon className={cx('icon')} />
                         <span className={cx('title')}>Transactions</span>
                     </li>
                     <li className={cx('item')}>
                         <LeaderboardIcon className={cx('icon')} />
                         <span className={cx('title')}>Reports</span>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
             <div className={cx('sidebar-menu')}>

@@ -1,7 +1,9 @@
+import { message } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { apiUrl } from '../../constants';
 
-function NewPromotionModal({ closeModal }) {
+function NewPromotionModal({ closeModal, onAdd }) {
     const [promotionData, setPromotionData] = useState({
         description: '',
         thumbnail: '',
@@ -16,7 +18,7 @@ function NewPromotionModal({ closeModal }) {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/product_categories')
+            .get(`${apiUrl}/api/product_categories`)
             .then((response) => {
                 const data = response.data;
                 setProductCategory(data);
@@ -68,14 +70,21 @@ function NewPromotionModal({ closeModal }) {
                 formData.append('image', image);
 
                 const responseUploadImage = await axios.post(
-                    'http://localhost:8080/api/files/upload',
+                    `${apiUrl}/api/admin/files/upload`,
                     formData,
                 );
 
-                await axios.post(`http://localhost:8080/api/promotions`, {
-                    ...promotionData,
-                    thumbnail: responseUploadImage.data,
-                });
+                const promotion = await axios.post(
+                    `${apiUrl}/api/admin/promotions`,
+                    {
+                        ...promotionData,
+                        thumbnail: responseUploadImage.data,
+                    },
+                );
+
+                onAdd(promotion.data);
+
+                message.success('Đã tạo khuyến mãi thành công');
             } catch (error) {
                 console.error(error);
                 // Xử lý lỗi

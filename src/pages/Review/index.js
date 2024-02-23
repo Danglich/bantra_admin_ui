@@ -1,9 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 const ReviewList = () => {
-    const [sortByViews, setSortByViews] = useState('');
-
     const [filter, setFilter] = useState({
         startDate: null,
         endDate: null,
@@ -15,35 +16,27 @@ const ReviewList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [reviews, setReviews] = useState([]);
     const [params, setParams] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [deleteId, setDeleteId] = useState();
 
     useEffect(() => {
+        setIsLoading(true);
         axios
-            .get(
-                `http://localhost:8080/api/reviews${`?page=${
-                    currentPage - 1
-                }`}${params}`,
-            )
+            .get(`${apiUrl}/api/reviews${`?page=${currentPage - 1}`}${params}`)
             .then((response) => {
                 const data = response.data;
 
                 setTotalPages(data.totalPages);
                 setCurrentPage(data.currentPage + 1);
                 setReviews(data.data);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
-
-    // Chuyển đến trang tiếp theo
-    const nextPage = () => {
-        setCurrentPage(currentPage + 1);
-    };
-
-    // Chuyển đến trang trước đó
-    const prevPage = () => {
-        setCurrentPage(currentPage - 1);
-    };
 
     // Chuyển đến một trang cụ thể
     const goToPage = (page) => {
@@ -77,12 +70,14 @@ const ReviewList = () => {
         });
     };
 
-    const handleDeleteReview = async (id) => {
-        await axios.delete(`http://localhost:8080/api/reviews/${id}`);
+    const handleDeleteReview = async () => {
+        await axios.delete(`${apiUrl}/api/reviews/${deleteId}`);
 
         console.log('Đã xóa thành công!');
         closeModal();
-        window.location.reload();
+        //window.location.reload();
+
+        setReviews((prev) => prev.filter((r) => r.id !== deleteId));
     };
 
     const [isOpen, setIsOpen] = useState(false);
@@ -100,6 +95,8 @@ const ReviewList = () => {
             <h1 className="text-[32px] mb-[24px]">
                 Danh sách đánh giá sản phẩm
             </h1>
+
+            {/* Bộ lọc */}
             <div className="flex mb-[24px]">
                 <div className="mr-4">
                     <label className="mr-2">Ngày bắt đầu:</label>
@@ -156,100 +153,123 @@ const ReviewList = () => {
                     </button>
                 </div>
             </div>
-            {/* Phần nội dung */}
-            <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className="text-left py-2 px-4 border-b">
-                            Nội dung
-                        </th>
-                        <th className="text-left py-2 px-4 border-b">Số sao</th>
-                        <th className="text-left py-2 px-4 border-b">
-                            Tên sản phẩm
-                        </th>
-                        <th className="text-left py-2 px-4 border-b">
-                            Người đánh giá
-                        </th>
-                        <th className="text-left py-2 px-4 border-b">Ngày</th>
-                        <th className="text-left py-2 px-4 border-b">Xóa</th>
-                        {/* Thêm cột Xóa */}
-                    </tr>
-                </thead>
-                <tbody>
-                    {reviews.map((review) => (
-                        <tr key={review.id}>
-                            <td className="py-2 px-4 border-b">
-                                {review.content}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {review.rate}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {review?.product?.name}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {review?.user?.email}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {review.createdAt}
-                            </td>
 
-                            <td className="py-2 px-4 border-b">
-                                <div>
-                                    <button
-                                        onClick={openModal}
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                    >
-                                        Xóa
-                                    </button>
-                                    {isOpen && (
-                                        <div className="fixed inset-0 flex items-center justify-center z-50">
-                                            <div className="bg-white p-12 rounded shadow">
-                                                <div className="flex justify-between items-center mb-12">
-                                                    <h3 className="text-[24px] ">
-                                                        Bạn có muốn xóa không?
-                                                    </h3>
-                                                    <button
-                                                        onClick={closeModal}
-                                                        className="text-gray-500 font-bold ml-[8px] hover:text-gray-700 text-[24px]"
-                                                    >
-                                                        &times;
-                                                    </button>
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    {/* Phần nội dung */}
+                    <table className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Nội dung
+                                </th>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Số sao
+                                </th>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Tên sản phẩm
+                                </th>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Người đánh giá
+                                </th>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Ngày
+                                </th>
+                                <th className="text-left py-2 px-4 border-b">
+                                    Xóa
+                                </th>
+                                {/* Thêm cột Xóa */}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {reviews.map((review) => (
+                                <tr key={review.id}>
+                                    <td className="py-2 px-4 border-b">
+                                        {review.content}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {review.rate}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <Link
+                                            to={`/products/${review?.product?.id}`}
+                                        >
+                                            {review?.product?.name}
+                                        </Link>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {review?.user?.email}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {review.createdAt}
+                                    </td>
+
+                                    <td className="py-2 px-4 border-b">
+                                        <div>
+                                            <button
+                                                onClick={() => {
+                                                    setDeleteId(review.id);
+                                                    openModal();
+                                                }}
+                                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                            >
+                                                Xóa
+                                            </button>
+                                            {isOpen && (
+                                                <div className="fixed inset-0 flex items-center justify-center z-50">
+                                                    <div className="bg-white p-12 rounded shadow">
+                                                        <div className="flex justify-between items-center mb-12">
+                                                            <h3 className="text-[24px] ">
+                                                                Bạn có muốn xóa
+                                                                không?
+                                                            </h3>
+                                                            <button
+                                                                onClick={
+                                                                    closeModal
+                                                                }
+                                                                className="text-gray-500 font-bold ml-[8px] hover:text-gray-700 text-[24px]"
+                                                            >
+                                                                &times;
+                                                            </button>
+                                                        </div>
+                                                        <div className="flex justify-end">
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleDeleteReview();
+                                                                }}
+                                                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
+                                                            >
+                                                                Xóa
+                                                            </button>
+                                                            <button
+                                                                onClick={
+                                                                    closeModal
+                                                                }
+                                                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                                            >
+                                                                Hủy
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-end">
-                                                    <button
-                                                        onClick={() =>
-                                                            handleDeleteReview(
-                                                                review.id,
-                                                            )
-                                                        }
-                                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                                    >
-                                                        Xóa
-                                                    </button>
-                                                    <button
-                                                        onClick={closeModal}
-                                                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                                                    >
-                                                        Hủy
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
 
-            {/* Không có review nào */}
+                    {/* Không có review nào */}
 
-            {reviews.length === 0 && (
-                <h1 className="text-[red] text-[32px] mt-[24px]">
-                    Không tìm thấy bài đánh giá nào
-                </h1>
+                    {reviews.length === 0 && (
+                        <h1 className="text-[red] text-[32px] mt-[24px]">
+                            Không tìm thấy bài đánh giá nào
+                        </h1>
+                    )}
+                </>
             )}
 
             {/* Phần phân trang */}

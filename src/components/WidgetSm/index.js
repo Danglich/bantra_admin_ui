@@ -2,6 +2,7 @@ import classNames from 'classnames/bind';
 import styles from '../WidgetLg/WidgetLg.module.scss';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { apiUrl } from '../../constants';
 
 const cx = classNames.bind(styles);
 
@@ -10,9 +11,7 @@ function WidgetSm({ data }) {
         if (
             window.confirm('Bạn có chắc chắn muốn xóa bài đánh giá này không ?')
         ) {
-            await axios.delete(
-                `http://localhost:8080/api/admin/reviews/${reviewId}`,
-            );
+            await axios.delete(`${apiUrl}/api/admin/reviews/${reviewId}`);
         }
     };
 

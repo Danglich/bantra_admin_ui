@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 function Product() {
     const [users, setUsers] = useState([]);
@@ -7,6 +9,7 @@ function Product() {
     const [currentPage, setCurrentPage] = useState(1);
     const [filter, setFilter] = useState({ sort: 'newest', role: '' });
     const [params, setParams] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChangeFilter = (e) => {
         setFilter({ ...filter, [e.target.name]: e.target.value });
@@ -32,21 +35,20 @@ function Product() {
     };
 
     useEffect(() => {
+        setIsLoading(true);
         axios
-            .get(
-                `http://localhost:8080/api/users${`?page=${
-                    currentPage - 1
-                }`}${params}`,
-            )
+            .get(`${apiUrl}/api/users${`?page=${currentPage - 1}`}${params}`)
             .then((response) => {
                 const data = response.data;
 
                 setTotalPages(data.totalPages);
                 setCurrentPage(data.currentPage + 1);
                 setUsers(data.data);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
 
@@ -62,7 +64,7 @@ function Product() {
     const handleDeleteUser = async (e, userId) => {
         e.stopPropagation();
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này ?')) {
-            await axios.delete(`http://localhost:8080/api/users/${userId}`);
+            await axios.delete(`${apiUrl}/api/admin/users/${userId}`);
 
             window.location.reload();
         } else {
@@ -78,9 +80,7 @@ function Product() {
                 } người dùng này ?`,
             )
         ) {
-            await axios.put(
-                `http://localhost:8080/api/users/disable/${user.id}`,
-            );
+            await axios.put(`${apiUrl}/api/admin/users/disable/${user.id}`);
 
             window.location.reload();
         }
@@ -155,86 +155,101 @@ function Product() {
                     </button>
                 </div>
             </div>
-            <table className="min-w-full border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className=" text-left py-2 px-4 border-b">ID</th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Họ và tên
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Địa chỉ email
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Giới tính
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Trạng thái
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Phân loại
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">Xóa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr
-                            key={user.id}
-                            onClick={() => handleUserClick(user.id)}
-                            className="cursor-pointer"
-                        >
-                            <td className="py-2 px-4 border-b">{user.id}</td>
-                            <td className="py-2 px-4 border-b">
-                                {user.fullName}
-                            </td>
-                            <td className="py-2 px-4 border-b">{user.email}</td>
-                            <td className="py-2 px-4 border-b">
-                                {user.gender ? 'Nam' : 'Nữ'}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                <span
-                                    onClick={(e) => {
-                                        handleToggleActive(e, user);
-                                    }}
-                                    className={`px-[6px] py-[4px] rounded-md text-white ${
-                                        user.active
-                                            ? 'bg-green-500'
-                                            : 'bg-red-500'
-                                    }`}
-                                >
-                                    {user.active
-                                        ? 'Hoạt động'
-                                        : 'Ngừng hoạt động'}
-                                </span>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                <span
-                                    className={`px-[6px] py-[4px] rounded-md  ${getRoleColor(
-                                        user.role,
-                                    )}`}
-                                >
-                                    {user.role}
-                                </span>
-                            </td>
-                            <td className="p-4 border-b">
-                                <button
-                                    onClick={(e) =>
-                                        handleDeleteUser(e, user.id)
-                                    }
-                                    className="px-[12px] py-[4px] bg-[red] text-white rounded-md"
-                                >
+
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    <table className="min-w-full border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    ID
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Họ và tên
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Địa chỉ email
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Giới tính
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Trạng thái
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Phân loại
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
                                     Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            {users.length === 0 && (
-                <h1 className="mt-[24px] text-[red] text-[32px]">
-                    Không tìm thấy người dùng nào!
-                </h1>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {users.map((user) => (
+                                <tr
+                                    key={user.id}
+                                    onClick={() => handleUserClick(user.id)}
+                                    className="cursor-pointer"
+                                >
+                                    <td className="py-2 px-4 border-b">
+                                        {user.id}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {user.fullName}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {user.email}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {user.gender ? 'Nam' : 'Nữ'}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <span
+                                            onClick={(e) => {
+                                                handleToggleActive(e, user);
+                                            }}
+                                            className={`px-[6px] py-[4px] rounded-md text-white ${
+                                                user.active
+                                                    ? 'bg-green-500'
+                                                    : 'bg-red-500'
+                                            }`}
+                                        >
+                                            {user.active
+                                                ? 'Hoạt động'
+                                                : 'Ngừng hoạt động'}
+                                        </span>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <span
+                                            className={`px-[6px] py-[4px] rounded-md  ${getRoleColor(
+                                                user.role,
+                                            )}`}
+                                        >
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 border-b">
+                                        <button
+                                            onClick={(e) =>
+                                                handleDeleteUser(e, user.id)
+                                            }
+                                            className="px-[12px] py-[4px] bg-[red] text-white rounded-md"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {users.length === 0 && (
+                        <h1 className="mt-[24px] text-[red] text-[32px]">
+                            Không tìm thấy người dùng nào!
+                        </h1>
+                    )}
+                </>
             )}
 
             <div className="mt-8 flex justify-start">

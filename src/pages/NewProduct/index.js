@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import ImageUploader from './ImageUploader';
 import { message } from 'antd';
+import { apiUrl } from '../../constants';
 
 const NewProductForm = () => {
     const [productName, setProductName] = useState('');
@@ -29,7 +30,7 @@ const NewProductForm = () => {
         // Gọi API để lấy danh sách loại sản phẩm
 
         axios
-            .get('http://localhost:8080/api/product_categories')
+            .get(`${apiUrl}/api/product_categories`)
             .then((response) => {
                 // Lưu danh sách loại sản phẩm vào state
                 setCategories(response.data);
@@ -122,7 +123,7 @@ const NewProductForm = () => {
         };
 
         const response = await axios.post(
-            `http://localhost:8080/api/product_categories/${selectedCategory}/products`,
+            `${apiUrl}/api/product_categories/${selectedCategory}/products`,
             product,
         );
 
@@ -135,7 +136,7 @@ const NewProductForm = () => {
                 formData.append('file', productImage);
 
                 await axios.post(
-                    `http://localhost:8080/api/products/${productId}/product_medias`,
+                    `${apiUrl}/api/admin/products/${productId}/product_medias`,
                     formData,
                 );
 
@@ -166,7 +167,7 @@ const NewProductForm = () => {
                 formData.append('image', productImage);
 
                 const response = await axios.post(
-                    'http://localhost:8080/api/files/upload',
+                    `${apiUrl}/api/admin/files/upload`,
                     formData,
                 );
 
@@ -224,7 +225,7 @@ const NewProductForm = () => {
                         id="product-description"
                         value={productDescription}
                         onChange={handleProductDescriptionChange}
-                        className="border border-gray-300 rounded px-2 py-1 w-full"
+                        className="border border-gray-300 rounded px-2 py-1 w-full min-h-[320px]"
                     />
                 </div>
 

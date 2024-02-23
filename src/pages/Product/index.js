@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AddForm from './FormAdd';
+import { apiUrl } from '../../constants';
+import Loading from '../Loading';
 
 function Product() {
     const [products, setProducts] = useState([]);
@@ -9,6 +11,7 @@ function Product() {
     const [totalItems, setTotalItems] = useState(0);
     const [categories, setCategories] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [params, setParams] = useState('');
@@ -44,12 +47,9 @@ function Product() {
     };
 
     useEffect(() => {
+        setIsLoading(true);
         axios
-            .get(
-                `http://localhost:8080/api/products${`?page=${
-                    currentPage - 1
-                }`}${params}`,
-            )
+            .get(`${apiUrl}/api/products${`?page=${currentPage - 1}`}${params}`)
             .then((response) => {
                 const data = response.data;
 
@@ -57,15 +57,17 @@ function Product() {
                 setCurrentPage(data.currentPage + 1);
                 setProducts(data.data);
                 setTotalItems(data.totalItems);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
+                setIsLoading(false);
             });
     }, [currentPage, params]);
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/product_categories')
+            .get(`${apiUrl}/api/product_categories`)
             .then((response) => {
                 setCategories(response.data);
             })
@@ -145,94 +147,112 @@ function Product() {
                     Bỏ lọc
                 </button>
             </div>
-            <h1 className="py-[8px] font-bold text-[18px] text-[blue]">
-                {totalItems} sản phẩm
-            </h1>
-            <table className="min-w-full border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className=" text-left py-2 px-4 border-b">ID</th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Hình ảnh
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">Tên</th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Mã sản phẩm
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">Giá</th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Đã bán
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">
-                            Trạng thái
-                        </th>
-                        <th className=" text-left py-2 px-4 border-b">Thêm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((product) => (
-                        <tr key={product.id}>
-                            <td className="py-2 px-4 border-b">{product.id}</td>
-                            <td className="py-2 px-4 border-b">
-                                <Link to={`/products/${product.id}`}>
-                                    <img
-                                        src={product.thumbnail}
-                                        alt={product.name}
-                                        className="w-24 h-24"
-                                    />
-                                </Link>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                <Link to={`/products/${product.id}`}>
-                                    {product.name}
-                                </Link>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {product.sku}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {product.lowestPrice} - {product.highestPrice}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {product.soldNumber}
-                            </td>
-                            <td className="p-4 border-b">
-                                <span
-                                    className={`inline-block px-2 py-1 rounded font-bold ${
-                                        product.quantity > 0
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-red-500 text-white'
-                                    }`}
-                                >
-                                    {product.quantity > 0
-                                        ? 'Sẵn hàng'
-                                        : 'Hết hàng'}
-                                </span>
-                            </td>
 
-                            <td className="py-2 px-4 border-b">
-                                <span
-                                    onClick={() => {
-                                        setShowAddForm(true);
-                                    }}
-                                    className="block px-[6px] py-[3px] rounded bg-[blue] text-[white] cursor-pointer text-center"
-                                >
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    <h1 className="py-[8px] font-bold text-[18px] text-[blue]">
+                        {totalItems} sản phẩm
+                    </h1>
+                    <table className="min-w-full border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    ID
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Hình ảnh
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Tên
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Mã sản phẩm
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Giá
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Đã bán
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
+                                    Trạng thái
+                                </th>
+                                <th className=" text-left py-2 px-4 border-b">
                                     Thêm
-                                </span>
-                            </td>
-                            <AddForm
-                                isShow={showAddForm}
-                                closeModal={handleCloseForm}
-                                product={product}
-                            />
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            {products.length === 0 && (
-                <h1 className="mt-[24px] text-[red] text-[32px]">
-                    Không tìm thấy sản phẩm nào!
-                </h1>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {products.map((product) => (
+                                <tr key={product.id}>
+                                    <td className="py-2 px-4 border-b">
+                                        {product.id}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <Link to={`/products/${product.id}`}>
+                                            <img
+                                                src={product.thumbnail}
+                                                alt={product.name}
+                                                className="w-24 h-24"
+                                            />
+                                        </Link>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        <Link to={`/products/${product.id}`}>
+                                            {product.name}
+                                        </Link>
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {product.sku}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {product.lowestPrice} -{' '}
+                                        {product.highestPrice}
+                                    </td>
+                                    <td className="py-2 px-4 border-b">
+                                        {product.soldNumber}
+                                    </td>
+                                    <td className="p-4 border-b">
+                                        <span
+                                            className={`inline-block px-2 py-1 rounded font-bold ${
+                                                product.quantity > 0
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'bg-red-500 text-white'
+                                            }`}
+                                        >
+                                            {product.quantity > 0
+                                                ? 'Sẵn hàng'
+                                                : 'Hết hàng'}
+                                        </span>
+                                    </td>
+
+                                    <td className="py-2 px-4 border-b">
+                                        <span
+                                            onClick={() => {
+                                                setShowAddForm(true);
+                                            }}
+                                            className="block px-[6px] py-[3px] rounded bg-[blue] text-[white] cursor-pointer text-center"
+                                        >
+                                            Thêm
+                                        </span>
+                                    </td>
+                                    <AddForm
+                                        isShow={showAddForm}
+                                        closeModal={handleCloseForm}
+                                        product={product}
+                                    />
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {products.length === 0 && (
+                        <h1 className="mt-[24px] text-[red] text-[32px]">
+                            Không tìm thấy sản phẩm nào!
+                        </h1>
+                    )}
+                </>
             )}
 
             <div className="mt-8 flex justify-start">

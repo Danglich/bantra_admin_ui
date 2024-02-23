@@ -3,6 +3,7 @@ import DisplayContent from './DisplayContent ';
 import NewsEditor from './NewsEditor';
 import axios from 'axios';
 import { message } from 'antd';
+import { apiUrl } from '../../constants';
 
 function AddNews() {
     const [news, setNews] = useState({ title: '' });
@@ -21,7 +22,7 @@ function AddNews() {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8080/api/news_categories')
+            .get(`${apiUrl}/api/news_categories`)
             .then((response) => {
                 // Lưu danh sách loại tin tức vào state
                 setCategories(response.data);
@@ -40,12 +41,12 @@ function AddNews() {
                 formData.append('image', selectedImage);
 
                 const responseUploadImage = await axios.post(
-                    'http://localhost:8080/api/files/upload',
+                    `${apiUrl}/api/admin/files/upload`,
                     formData,
                 );
 
                 await axios.post(
-                    `http://localhost:8080/api/news/${selectedCategory}`,
+                    `${apiUrl}/api/admin/news/${selectedCategory}`,
                     { ...news, thumbnail: responseUploadImage.data },
                 );
 

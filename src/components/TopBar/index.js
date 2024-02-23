@@ -40,7 +40,10 @@ function TopBar() {
                 <div className={cx('user')}>
                     <img
                         className={cx('avatar')}
-                        src={user?.avatar}
+                        src={
+                            user?.image_url ||
+                            'https://www.shutterstock.com/shutterstock/photos/1153673752/display_1500/stock-vector-profile-placeholder-image-gray-silhouette-no-photo-1153673752.jpg'
+                        }
                         alt=""
                     ></img>
                     <ul className={cx('option')}>

@@ -3,6 +3,7 @@ import DisplayContent from '../AddNews/DisplayContent ';
 import NewsEditor from '../AddNews/NewsEditor';
 import axios from 'axios';
 import { message } from 'antd';
+import { apiUrl } from '../../constants';
 
 function EditNews({ newsData }) {
     const [news, setNews] = useState(newsData);
@@ -21,7 +22,7 @@ function EditNews({ newsData }) {
         // Gọi API để lấy danh sách loại tin tức
 
         axios
-            .get('http://localhost:8080/api/news_categories')
+            .get(`${apiUrl}/api/news_categories`)
             .then((response) => {
                 // Lưu danh sách loại tin tức vào state
                 setCategories(response.data);
@@ -38,11 +39,11 @@ function EditNews({ newsData }) {
                 formData.append('image', selectedImage);
 
                 const responseUploadImage = await axios.post(
-                    'http://localhost:8080/api/files/upload',
+                    `${apiUrl}/api/admin/files/upload`,
                     formData,
                 );
 
-                await axios.put(`http://localhost:8080/api/news`, {
+                await axios.put(`${apiUrl}/api/admin/news`, {
                     ...news,
                     thumbnail: responseUploadImage.data,
                 });
@@ -54,7 +55,7 @@ function EditNews({ newsData }) {
             }
         } else {
             try {
-                await axios.put(`http://localhost:8080/api/news`, news);
+                await axios.put(`${apiUrl}/api/admin/news`, news);
             } catch (error) {
                 console.log(error);
             }
@@ -90,7 +91,7 @@ function EditNews({ newsData }) {
         setNews({ ...news, published: !news.published });
 
         try {
-            await axios.put(`http://localhost:8080/api/news`, {
+            await axios.put(`${apiUrl}/api/admin/news`, {
                 ...news,
                 published: !news.published,
             });

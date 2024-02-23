@@ -2,6 +2,7 @@ import { message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { apiUrl } from '../../constants';
 
 function OrderDetail() {
     const { id } = useParams();
@@ -12,7 +13,7 @@ function OrderDetail() {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/api/orders/${id}`)
+            .get(`${apiUrl}/api/orders/${id}`)
             .then((response) => {
                 const data = response.data;
                 setOrder(data);
@@ -33,13 +34,10 @@ function OrderDetail() {
     }, [order]);
 
     const handleStatusChange = async (newStatus) => {
-        await axios.put(
-            'http://localhost:8080/api/admin/orders/update/status',
-            {
-                order_id: order.id,
-                status: newStatus,
-            },
-        );
+        await axios.put(`${apiUrl}/api/admin/orders/update/status`, {
+            order_id: order.id,
+            status: newStatus,
+        });
         message.success('Thay đổi đơn hàng thành công');
         setIsModalOpen(false);
         window.location.reload();
